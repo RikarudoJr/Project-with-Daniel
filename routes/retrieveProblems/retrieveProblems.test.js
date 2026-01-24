@@ -3,7 +3,7 @@ import { retrieveHandler, retrieveProblems, retrieveTrack, retrieveTrackRecord }
 import request from 'supertest';
 import sampleProblems from "./SampleProblems.json"
 
-describe("trackRecord()",()=>{
+describe("retrieveTrackRecord()",()=>{
     /* 
         Pre-condition: 
         - handler === string, handler != null
