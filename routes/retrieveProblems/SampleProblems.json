@@ -1,0 +1,32 @@
+[
+      {
+        "contestId": 2190,
+        "index": "A",
+        "name": "Comparable Permutations",
+        "type": "PROGRAMMING",
+        "points": 1750,
+        "tags": [
+          "greedy",
+          "implementation",
+          "interactive",
+          "sortings",
+          "two pointers"
+        ]
+      },
+      {
+        "contestId": 1918,
+        "index": "B",
+        "name": "ace5 and Task Order",
+        "type": "PROGRAMMING",
+        "points": 2500,
+        "rating": 2200,
+        "tags": [
+          "constructive algorithms",
+          "divide and conquer",
+          "implementation",
+          "interactive",
+          "probabilities",
+          "sortings"
+        ]
+      }
+]
