@@ -1,42 +1,35 @@
-export async function retrieveHandler(userId){
+import { fetchProblems } from "./fetchProblems.js"
+export async function retrieveHandlerStub1(userId){
 
     
 }
-export async function route(req,res){
+export async function newUserProblems(req,res){
     //retrieveHandler
-    const userId = retrieveUserId(req.cookies)
-    const handler = retrieveHandler(userId)
-    const trackRecord = retrieveTrackRecord(handler)
-    const problemCriteria = problemSetSelector(trackRecord)
-    const problemSet = await retrieveProblems(problemCriteria);
-    await saveProblemSet(problemSet)
-}
+    const {index} = req.params
+    const problemSet = await retrieveProblemsStub(index)
+    return res.json(problemSet)
+    
 
-export async function retrieveTrackRecord(handler){
+}
+export async function retrieveTrackRecordStub(handler){
     
     if(!handler) {throw new Error("error")}
-    
-    return (
-        [
-            {id:"1",verdict:"OK"},
-            {id:"2",verdict:"OK"},
-            {id:"3",verdict:"OK"},
-            {id:"4",verdict:"OK"},
-            {id:"5",verdict:"OK"},
-        ]
-    )
+
 }
-export async function retrieveProblems(index){
+
+export async function checkFinishedTask(assignedProblemID,trackRecords){
+    const finishedTasks = trackRecords.filter(submission=>(assignedProblemID.includes(submission.contestId)))
+    const result = finishedTasks.map(record =>({contestId:record.contestId,verdict:record.verdict}))
+    return result
+}
+
+export async function retrieveProblemsStub(index){
     if(index instanceof Array || !index){
         throw new Error("error")
     }
-    
-    return ([
-            {id:"1",index:"OK"},
-            {id:"2",index:"OK"},
-            {id:"3",index:"OK"},
-            {id:"4",index:"OK"},
-            {id:"5",index:"OK"},
-    ]);
+    const problems = await fetchProblems();
+    const filteredProblems = problems.filter(problem => problem.index ==index);
+
+    return (filteredProblems.slice(0,5));
 
 }
