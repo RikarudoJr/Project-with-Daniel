@@ -1,13 +1,16 @@
-import { fetchProblems } from "./fetchProblems.js"
+import { fetchProblems, saveAssignments } from "./externalFetch/fetchProblems.js"
 export async function retrieveHandlerStub1(userId){
 
     
 }
 export async function newUserProblems(req,res){
     //retrieveHandler
-    const {index} = req.params
-    const problemSet = await retrieveProblemsStub(index)
-    return res.json(problemSet)
+    
+    const userRating = await fetchUserRating(userHandler);
+    const assignments = await generateAssignments(userRating);
+    
+    saveAssignments(assignments);
+    return res.json(assignments)
     
 
 }
@@ -23,13 +26,20 @@ export async function checkFinishedTask(assignedProblemID,trackRecords){
     return result
 }
 
-export async function retrieveProblemsStub(index){
-    if(index instanceof Array || !index){
+//user will get 15 assignments ranging from (their rating ~ rating+200)
+export async function generateAssignments(userRating){
+    
+    if(!(Number.isInteger(userRating) )){
         throw new Error("error")
     }
-    const problems = await fetchProblems();
-    const filteredProblems = problems.filter(problem => problem.index ==index);
 
-    return (filteredProblems.slice(0,5));
+    const problems = await fetchProblems();
+    
+    const FlooredUserRating = Math.floor(userRating / 100) * 100;
+    const filteredProblems = problems.
+        filter(problem => problem.rating <= FlooredUserRating+200 && problem.rating >= FlooredUserRating);
+    
+    return (filteredProblems.slice(0,15));
 
 }
+

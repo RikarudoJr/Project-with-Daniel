@@ -1,8 +1,8 @@
 import { describe,test,expect, vi } from "vitest";
-import { checkFinishedTask, retrieveHandlerStub, retrieveProblemsStub, retrieveTrack, retrieveTrackRecordStub } from "./retrieveProblems";
+import { checkFinishedTask, retrieveHandlerStub, generateAssignments, retrieveTrack, retrieveTrackRecordStub } from "./retrieveProblems.js";
 import request from 'supertest';
 import sampleProblems from "./SampleProblems.json"
-import * as fetchProblemsModule from "./fetchProblems.js"
+import * as fetchProblemsModule from "./externalFetch/fetchProblems.js"
 import sampleTrackRecords from "./SampleTrackRecord.json"
 describe("check for finished assigned tasks",()=>{
     /* 
@@ -93,70 +93,49 @@ describe("check for finished assigned tasks",()=>{
         
     }) 
 })
-describe("retrieveProblems()",()=>{
-    test("if index===string, return problems sets (if doesn't exist return [])",async()=>{
-        const index = "anyIndex";
-        const problems = await retrieveProblemsStub(index);
-        problems.forEach(problem => {
-            expect(problem).toHaveProperty("index");
-            expect(problem).toHaveProperty("id");
-        });
-    }) 
-    test("if index is an array return error",async()=>{
-        const indexes = ["index1","index2"];
-        await expect(retrieveProblemsStub(indexes)).rejects.toThrowError()
-    }) 
-    test("if index is null, return error",async()=>{
-        const index = null;
-        await expect(retrieveProblemsStub(index)).rejects.toThrowError()
-    }) 
-    test("filter problemSet based on index, return maximum 5 problems with selected index",async()=>{
-        const sampleProblems = [
-            {contestId: 1, index: "B"},
-            {contestId: 2, index: "A"},
-            {contestId: 3, index: "A"},
-            {contestId: 4, index: "A"},
-            {contestId: 5, index: "A"},
-            {contestId: 6, index: "A"},
-            {contestId: 7, index: "A"}
+
+
+
+describe.only("generate assignments",()=>{
+
+interface ProblemSet{
+    contestId: number
+    rating?:number
+}
+
+test("filter problemSet based on index, return maximum 5 problems with selected index",async()=>{
+        let userRating1: number = 1000
+        let userRating2: number = 1099
+        
+        let sampleProblems: ProblemSet[] = [
+            {contestId: 1, rating: 999},
+            {contestId: 2, rating: 1000},
+            {contestId: 3, rating: 1200},
+            {contestId: 4, rating: 1201},
+
         ]
+
         const fetchProblems = vi
         .spyOn(fetchProblemsModule,"fetchProblems")
         .mockResolvedValue(sampleProblems)
 
-        const index = "A";
-        const problems = await retrieveProblemsStub(index);
-        expect(problems.length).toBe(5);
+        let problems = await generateAssignments(userRating1);
+        expect(problems.length).not.toBe(0);
         problems.forEach(problem => {
-            expect(problem.index).toBe("A")
-        });
+            expect(problem.rating).toBeGreaterThanOrEqual(1000)
+            expect(problem.rating).toBeLessThanOrEqual(1200)
+        })
+        
+
+        problems = await generateAssignments(userRating2);
+        expect(problems.length).not.toBe(0);
+        problems.forEach(problem => {
+            expect(problem.rating).toBeGreaterThanOrEqual(1000)
+            expect(problem.rating).toBeLessThanOrEqual(1200)
+        })
+
         
     }) 
-    test("if index = x , return only difficulty level x dataset",async()=>{
-        const sampleProblems = [
-            {contestId: 1, index: "A"},
-            {contestId: 2, index: "A"},
-            {contestId: 3, index: "A"},
-        ]
-        const fetchProblems = vi
-        .spyOn(fetchProblemsModule,"fetchProblems")
-        .mockResolvedValue(sampleProblems)
-
-        const index = "A";
-        const problems = await retrieveProblemsStub(index);
-        expect(problems.length).toBe(3);
-        problems.forEach(problem => {
-            expect(problem.index).toBe("A")
-        });
-
-    }) 
-    test("if no problem set is returned, return []",async()=>{
-        const index = "nonExistentIndex";
-        const problems = await retrieveProblemsStub(index);
-        expect(problems).toEqual([]);
-
-    }) 
-    
-    
+   
 })
 
